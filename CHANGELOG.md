@@ -10,7 +10,7 @@ Stride Workflow uses GitHub releases for every published update. Each release sh
 - install command
 - upgrade notes when behavior changes
 
-## [0.1.0] - 2026-06-28
+## [1.0.0] - 2026-06-28
 
 Initial release.
 
