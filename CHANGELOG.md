@@ -10,6 +10,16 @@ Stride Workflow uses GitHub releases for every published update. Each release sh
 - install command
 - upgrade notes when behavior changes
 
+## [0.1.3] - 2026-06-28
+
+Documentation split release.
+
+### Changed
+
+- Shortened the README so it focuses on what Stride Workflow is and why it exists.
+- Moved technical workflow details into `docs/technical-overview.md`.
+- Removed the older `docs/concept.md` scratch/technical page to avoid duplication.
+
 ## [0.1.2] - 2026-06-28
 
 Naming release.
