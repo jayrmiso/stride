@@ -10,6 +10,12 @@ Stride Workflow uses GitHub releases for every published update. Each release sh
 - install command
 - upgrade notes when behavior changes
 
+## [1.0.10] - 2026-06-29
+
+### Changed
+
+- Made `$stride touch` always create or reuse a Stride worktree, even for tiny changes.
+
 ## [1.0.9] - 2026-06-29
 
 ### Changed

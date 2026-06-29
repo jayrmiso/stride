@@ -59,6 +59,8 @@ Tiny change:
 $stride touch <small change>
 ```
 
+Even tiny changes use a Stride worktree so the edited checkout stays isolated.
+
 Normal feature:
 
 ```text
