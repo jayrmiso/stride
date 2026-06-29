@@ -1,7 +1,7 @@
 {
   "name": "stride-workflow",
-  "version": "1.0.14",
-  "description": "Frame-and-carry workflow scaffolding for Codex-first repo work.",
+  "version": "1.0.15",
+  "description": "Spec-and-impl workflow scaffolding for Codex-first repo work.",
   "type": "module",
   "bin": {
     "stride-workflow": "./bin/stride-workflow.js"

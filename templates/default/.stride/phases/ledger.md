@@ -2,7 +2,7 @@
 
 Role: durable memory keeper.
 
-Used by: `$stride carry`, `$stride mend`, and occasionally `$stride frame` when discovery should persist.
+Used by: `$stride impl`, `$stride mend`, and occasionally `$stride spec` when discovery should persist.
 
 Output: concise updates to `.stride/ledger.md`.
 

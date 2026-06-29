@@ -14,27 +14,46 @@ const packageJson = JSON.parse(fs.readFileSync(path.join(rootDir, "package.json"
 const agentsBridgeStart = "<!-- stride-workflow:start -->";
 const agentsBridgeEnd = "<!-- stride-workflow:end -->";
 
-const commandNames = ["touch", "frame", "carry", "land", "kit", "review", "mend", "status", "workers"];
+const commandNames = ["patch", "spec", "impl", "land", "kit", "review", "mend", "status", "workers"];
+const staleManagedPaths = [
+  ".agents/skills/stride-touch",
+  ".agents/skills/stride-frame",
+  ".agents/skills/stride-carry",
+  ".agents/skills/stride-land",
+  ".agents/skills/stride-kit",
+  ".agents/skills/stride-review",
+  ".agents/skills/stride-mend",
+  ".agents/skills/stride-status",
+  ".agents/skills/stride-workers",
+  ".stride/commands/touch.md",
+  ".stride/commands/frame.md",
+  ".stride/commands/carry.md",
+  ".codex/agents/stride-builder.toml",
+  ".codex/agents/stride-lead.toml",
+  ".codex/agents/stride-reviewer.toml",
+];
 const strideVersionFile = path.join(".stride", "version.txt");
 const requiredPaths = [
   ".stride/config.md",
   ".stride/ledger.md",
   ".stride/version.txt",
   ".stride/bin/stride-workflow.mjs",
-  ".codex/agents/stride-reviewer.toml",
+  ".codex/agents/stridebuilder.toml",
+  ".codex/agents/stridelead.toml",
+  ".codex/agents/stridereviewer.toml",
   ".agents/skills/stride/SKILL.md",
-  ".agents/skills/stride-workers/SKILL.md",
-  ".agents/skills/stride-touch/SKILL.md",
-  ".agents/skills/stride-frame/SKILL.md",
-  ".agents/skills/stride-carry/SKILL.md",
-  ".agents/skills/stride-land/SKILL.md",
-  ".agents/skills/stride-kit/SKILL.md",
-  ".agents/skills/stride-review/SKILL.md",
-  ".agents/skills/stride-mend/SKILL.md",
-  ".agents/skills/stride-status/SKILL.md",
-  ".stride/commands/touch.md",
-  ".stride/commands/frame.md",
-  ".stride/commands/carry.md",
+  ".agents/skills/strideworkers/SKILL.md",
+  ".agents/skills/stridepatch/SKILL.md",
+  ".agents/skills/stridespec/SKILL.md",
+  ".agents/skills/strideimpl/SKILL.md",
+  ".agents/skills/strideland/SKILL.md",
+  ".agents/skills/stridekit/SKILL.md",
+  ".agents/skills/stridereview/SKILL.md",
+  ".agents/skills/stridemend/SKILL.md",
+  ".agents/skills/stridestatus/SKILL.md",
+  ".stride/commands/patch.md",
+  ".stride/commands/spec.md",
+  ".stride/commands/impl.md",
   ".stride/commands/land.md",
   ".stride/commands/kit.md",
   ".stride/commands/review.md",
@@ -72,8 +91,8 @@ function usage() {
 
 Usage:
   stride-workflow init [path] [--force] [--no-codex] [--yes]
-  stride-workflow command <touch|frame|carry|land|kit|review|mend|status|workers>
-  stride-workflow <touch|frame|carry|land|kit|review|mend|status|workers>
+  stride-workflow command <patch|spec|impl|land|kit|review|mend|status|workers>
+  stride-workflow <patch|spec|impl|land|kit|review|mend|status|workers>
   stride-workflow worktree <create|status|assert|cleanup> [slug-or-path]
   stride-workflow workers [path]
   stride-workflow subject [path]
@@ -87,9 +106,9 @@ Commands:
   command  Print the instructions for one Stride Workflow command.
   worktree Create, inspect, assert, or clean up the active Stride worktree.
   workers  Print the worker policy for token-aware execution.
-  subject  Suggest a conventional commit subject from the active frame and handoff.
+  subject  Suggest a conventional commit subject from the active spec and handoff.
   doctor   Check whether a project has the expected Stride Workflow files.
-  status   Show the current handoff, frame, and ledger for a project.
+  status   Show the current handoff, spec, and ledger for a project.
   version  Print the Stride Workflow CLI version.
 `;
 }
@@ -166,6 +185,19 @@ function applyDirChanges(changes, options) {
     ensureDir(path.dirname(change.destPath));
     fs.writeFileSync(change.destPath, fs.readFileSync(change.srcPath));
     console.log(`${change.action} ${change.relPath}`);
+  }
+}
+
+function collectStaleManagedChanges(projectDir) {
+  return staleManagedPaths
+    .map((relPath) => ({ action: "delete", relPath, target: path.join(projectDir, relPath) }))
+    .filter((change) => fs.existsSync(change.target));
+}
+
+function applyStaleManagedChanges(changes) {
+  for (const change of changes) {
+    fs.rmSync(change.target, { recursive: true, force: true });
+    console.log(`delete ${change.relPath}`);
   }
 }
 
@@ -250,16 +282,16 @@ function detectCommitType(text) {
 }
 
 function inferCommitSubject(projectDir) {
-  const framePath = path.join(projectDir, ".stride", "frames", "current.md");
+  const specPath = path.join(projectDir, ".stride", "specs", "current.md");
   const runPath = path.join(projectDir, ".stride", "runs", "current.md");
 
-  const frameText = fs.existsSync(framePath) ? fs.readFileSync(framePath, "utf8") : "";
+  const specText = fs.existsSync(specPath) ? fs.readFileSync(specPath, "utf8") : "";
   const runText = fs.existsSync(runPath) ? fs.readFileSync(runPath, "utf8") : "";
-  const primaryText = frameText || runText;
+  const primaryText = specText || runText;
   const combinedText = [primaryText, runText].filter(Boolean).join("\n\n");
 
   if (!combinedText) {
-    fail(`no active frame or run found at ${path.join(projectDir, ".stride", "frames", "current.md")} or ${runPath}`);
+    fail(`no active spec or run found at ${path.join(projectDir, ".stride", "specs", "current.md")} or ${runPath}`);
   }
 
   const topic = extractTopic(primaryText || combinedText);
@@ -384,13 +416,15 @@ function buildCodexBridge() {
     "- Use `node .stride/bin/stride-workflow.mjs ...` as the repo-local Stride runner.",
     "- If the Stride runner is missing or fails, stop and ask the user to update Stride. Do not fall back to raw git worktree commands.",
     "- Do not edit application files until the Stride runner's `worktree assert` passes for the active Stride worktree.",
-    "- Spawn or use the stride-reviewer worker during touch, carry, and land before handoff.",
+    "- Treat the main chat as orchestrator for patch, impl, and land.",
+    "- Spawn or use stridebuilder for patch and impl implementation work.",
+    "- Spawn or use stridereviewer during patch, impl, and land before handoff.",
     "- Use .stride/runs/current.md for the latest manual-test handoff when it exists.",
     "- Use .stride/ledger.md for durable project facts.",
     "- Update the ledger when a discovery should survive future turns.",
     "",
-    "Primary loop: $stride frame -> approval -> $stride carry -> manual test -> $stride land.",
-    "Tiny changes can use $stride touch.",
+    "Primary loop: $stride spec -> approval -> $stride impl -> manual test -> $stride land.",
+    "Small no-spec changes can use $stride patch.",
     "UI consistency and screenshot-inspired frontend work can use $stride kit ui.",
     agentsBridgeEnd,
   ].join("\n");
@@ -487,8 +521,9 @@ async function initProject(args) {
         cwd: projectDir,
         force,
       });
+  const staleChanges = collectStaleManagedChanges(projectDir);
   const bridgeChange = noCodex ? null : collectCodexBridgeChange(projectDir);
-  const changes = [...strideChanges, ...agentChanges, ...codexChanges, ...(bridgeChange ? [bridgeChange] : [])];
+  const changes = [...strideChanges, ...agentChanges, ...codexChanges, ...staleChanges, ...(bridgeChange ? [bridgeChange] : [])];
   const needsVersionUpdate = installedVersion !== packageJson.version;
   const shouldPrompt = existingStride && (changes.length > 0 || needsVersionUpdate) && !yes && !force;
 
@@ -501,6 +536,7 @@ async function initProject(args) {
   }
 
   ensureDir(projectDir);
+  applyStaleManagedChanges(staleChanges);
   ensureDir(path.join(projectDir, ".stride"));
   applyDirChanges(strideChanges, {
     cwd: projectDir,
@@ -548,7 +584,7 @@ function showStatus(args) {
   const projectDir = path.resolve(args[0] ?? process.cwd());
   const ledger = path.join(projectDir, ".stride", "ledger.md");
   const run = path.join(projectDir, ".stride", "runs", "current.md");
-  const frame = path.join(projectDir, ".stride", "frames", "current.md");
+  const spec = path.join(projectDir, ".stride", "specs", "current.md");
 
   if (!fs.existsSync(ledger)) {
     fail(`no Stride Workflow ledger found at ${ledger}. Run "stride-workflow init" first.`);
@@ -559,8 +595,8 @@ function showStatus(args) {
     process.stdout.write("\n\n---\n\n");
   }
 
-  if (fs.existsSync(frame)) {
-    process.stdout.write(fs.readFileSync(frame, "utf8"));
+  if (fs.existsSync(spec)) {
+    process.stdout.write(fs.readFileSync(spec, "utf8"));
     process.stdout.write("\n\n---\n\n");
   }
 
@@ -867,9 +903,9 @@ async function main() {
     case "-v":
       version();
       break;
-    case "touch":
-    case "frame":
-    case "carry":
+    case "patch":
+    case "spec":
+    case "impl":
     case "land":
     case "kit":
     case "review":

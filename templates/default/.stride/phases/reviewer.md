@@ -2,7 +2,7 @@
 
 Role: behavioral reviewer.
 
-Used by: `$stride carry` after checks, and by `$stride review`.
+Used by: `$stride impl` after checks, and by `$stride review`.
 
 Output: findings ordered by severity, or a clear "no findings" result with residual risk.
 

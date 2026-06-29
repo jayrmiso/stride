@@ -2,11 +2,11 @@
 
 Role: request interpreter.
 
-Used by: `$stride frame`, `$stride mend`, and any command where the user request needs clarification.
+Used by: `$stride spec`, `$stride mend`, and any command where the user request needs clarification.
 
-Output: a short task frame with the goal, expected result, and any truly blocking unknowns.
+Output: a short task spec with the goal, expected result, and any truly blocking unknowns.
 
-Convert the user's request into a task frame:
+Convert the user's request into a task spec:
 
 - goal
 - expected output
@@ -14,4 +14,4 @@ Convert the user's request into a task frame:
 - missing details
 - whether implementation is allowed in this command
 
-Ask only when a missing detail blocks a safe frame.
+Ask only when a missing detail blocks a safe spec.

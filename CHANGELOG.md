@@ -10,13 +10,23 @@ Stride Workflow uses GitHub releases for every published update. Each release sh
 - install command
 - upgrade notes when behavior changes
 
+## [1.0.15] - 2026-06-29
+
+### Changed
+
+- Renamed the primary flow to `$stride spec`, `$stride impl`, and `$stride patch`.
+- Renamed installed command skills to no-dash names such as `stridespec`, `strideimpl`, and `stridepatch`.
+- Made the default patch and impl flow require main-chat orchestration, a `stridebuilder` editing worker, and a `stridereviewer` review worker.
+- Added optional `stridelead` for balance/heavy planning when extra architecture judgment is worth the token cost.
+- Made init remove old managed dashed skills and old `frame`, `carry`, and `touch` command files during upgrade.
+
 ## [1.0.14] - 2026-06-29
 
 ### Changed
 
-- Made `$stride touch` use the same worktree, checks, reviewer-worker, fixer, preview, handoff, and ledger flow as `$stride carry`.
-- Clarified that touch skips frame/spec only; it does not skip review.
-- Updated worker guidance so touch, carry, and land all use the default reviewer worker unless a stronger mode is justified.
+- Made `$stride patch` use the same worktree, checks, reviewer-worker, fixer, preview, handoff, and ledger flow as `$stride impl`.
+- Clarified that patch skips spec only; it does not skip review.
+- Updated worker guidance so patch, impl, and land all use the default reviewer worker unless a stronger mode is justified.
 
 ## [1.0.13] - 2026-06-29
 
@@ -31,7 +41,7 @@ Stride Workflow uses GitHub releases for every published update. Each release sh
 ### Changed
 
 - Added executable `stride-workflow worktree create`, `worktree status`, `worktree assert`, and `worktree cleanup` commands so Stride can prove work is happening away from `main` or `master` and clean up safely after merge.
-- Updated carry, touch, land, skills, and the Codex bridge to require worktree assertion before edits or commits.
+- Updated impl, patch, land, skills, and the Codex bridge to require worktree assertion before edits or commits.
 - Strengthened the default reviewer worker with focused review passes and blocking/minor triage while keeping the default token posture to one reviewer worker.
 - Made `doctor` report installed-version drift instead of only checking for missing files.
 
@@ -39,15 +49,15 @@ Stride Workflow uses GitHub releases for every published update. Each release sh
 
 ### Changed
 
-- Added the `stride-reviewer` Codex agent template so default worker mode installs a real reviewer worker.
-- Strengthened carry and land so they announce phases, require the worktree before editing or landing, and run reviewer-worker review before handoff or commit.
-- Tightened touch so even tiny edits announce phases and stop instead of editing from `main` or `master`.
+- Added the `stridereviewer` Codex agent template so default worker mode installs a real reviewer worker.
+- Strengthened impl and land so they announce phases, require the worktree before editing or landing, and run reviewer-worker review before handoff or commit.
+- Tightened patch so even tiny edits announce phases and stop instead of editing from `main` or `master`.
 
 ## [1.0.10] - 2026-06-29
 
 ### Changed
 
-- Made `$stride touch` always create or reuse a Stride worktree, even for tiny changes.
+- Made `$stride patch` always create or reuse a Stride worktree, even for tiny changes.
 
 ## [1.0.9] - 2026-06-29
 
@@ -80,7 +90,7 @@ Stride Workflow uses GitHub releases for every published update. Each release sh
 
 ### Changed
 
-- Added `stride-workflow subject` to derive a conventional commit subject from the active frame and handoff.
+- Added `stride-workflow subject` to derive a conventional commit subject from the active spec and handoff.
 - Made `$stride land` and the land skill point at the derived subject flow.
 
 ## [1.0.4] - 2026-06-29
@@ -99,7 +109,7 @@ Stride Workflow uses GitHub releases for every published update. Each release sh
 
 ### Changed
 
-- Split the Codex skill install into multiple Stride skills so the `$` picker can surface command-specific actions like `stride-frame` and `stride-carry`.
+- Split the Codex skill install into multiple Stride skills so the `$` picker can surface command-specific actions like `stride-spec` and `stride-impl`.
 
 ## [1.0.1] - 2026-06-29
 
@@ -117,7 +127,7 @@ Initial release.
 
 - Added the `stride-workflow` CLI with `init`, `doctor`, `status`, `version`, and command instruction output.
 - Added the Codex-first `.stride/` workflow installer.
-- Added core chat commands: `$stride touch`, `$stride frame`, `$stride carry`, `$stride land`, `$stride review`, `$stride mend`, and `$stride status`.
+- Added core chat commands: `$stride patch`, `$stride spec`, `$stride impl`, `$stride land`, `$stride review`, `$stride mend`, and `$stride status`.
 - Added `$stride kit ui` for frontend consistency, screenshot-inspired UI work, reusable components, tokens, and careful migration.
 - Added worktree, previewer, and handoff phases so manual testing happens from the right checkout with a clear checklist.
 - Added `AGENTS.md` generation as the Codex bridge.

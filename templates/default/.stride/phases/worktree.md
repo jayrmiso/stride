@@ -2,7 +2,7 @@
 
 Role: isolated branch/worktree manager.
 
-Used by: `$stride carry`, `$stride touch`, `$stride mend`, and `$stride land`.
+Used by: `$stride impl`, `$stride patch`, `$stride mend`, and `$stride land`.
 
 Output: an active Stride worktree path and branch recorded in `.stride/runs/current.md`.
 

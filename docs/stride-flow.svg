@@ -1,6 +1,6 @@
 <svg width="1120" height="650" viewBox="0 0 1120 650" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
   <title id="title">Stride Workflow flow diagram</title>
-  <desc id="desc">Stride Workflow starts with touch for tiny changes or frame for larger work, then carries changes through worktree implementation, checks, preview, manual testing, mend if needed, and land when approved.</desc>
+  <desc id="desc">Stride Workflow starts with patch for tiny changes or spec for larger work, then implements changes through a worktree, builder worker, checks, reviewer worker, preview, manual testing, mend if needed, and land when approved.</desc>
   <defs>
     <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
       <feDropShadow dx="0" dy="8" stdDeviation="8" flood-color="#14213D" flood-opacity="0.12"/>
@@ -15,17 +15,17 @@
   <path d="M0 556C126 592 270 592 431 556C618 514 795 521 963 576C1020 595 1073 604 1120 603V650H0V556Z" fill="#EAF0F7"/>
 
   <text x="64" y="74" fill="#17212B" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="36" font-weight="800">Stride Workflow</text>
-  <text x="64" y="108" fill="#516173" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="17">Frame the work, carry it in an isolated checkout, preview the right app, then land only after manual approval.</text>
+  <text x="64" y="108" fill="#516173" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="17">Spec the work, build in an isolated checkout, review it, then land only after manual approval.</text>
 
   <g filter="url(#shadow)">
     <rect x="64" y="164" width="168" height="82" rx="14" fill="#FFFFFF"/>
-    <text x="88" y="198" fill="#17212B" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="20" font-weight="800">$stride touch</text>
+    <text x="88" y="198" fill="#17212B" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="20" font-weight="800">$stride patch</text>
     <text x="88" y="225" fill="#5C6876" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="14">Tiny changes</text>
   </g>
 
   <g filter="url(#shadow)">
     <rect x="64" y="314" width="168" height="82" rx="14" fill="#FFFFFF"/>
-    <text x="88" y="348" fill="#17212B" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="20" font-weight="800">$stride frame</text>
+    <text x="88" y="348" fill="#17212B" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="20" font-weight="800">$stride spec</text>
     <text x="88" y="375" fill="#5C6876" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="14">Probe and spec</text>
   </g>
 
@@ -37,8 +37,8 @@
 
   <g filter="url(#shadow)">
     <rect x="540" y="314" width="168" height="82" rx="14" fill="#FFFFFF"/>
-    <text x="564" y="348" fill="#17212B" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="20" font-weight="800">$stride carry</text>
-    <text x="564" y="375" fill="#5C6876" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="14">Build the frame</text>
+    <text x="564" y="348" fill="#17212B" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="20" font-weight="800">$stride impl</text>
+    <text x="564" y="375" fill="#5C6876" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="14">Builder worker</text>
   </g>
 
   <g filter="url(#shadow)">
@@ -52,7 +52,7 @@
     <rect x="778" y="314" width="240" height="106" rx="14" fill="#FFFFFF"/>
     <text x="802" y="348" fill="#17212B" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="20" font-weight="800">Check + Review</text>
     <text x="802" y="375" fill="#5C6876" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="14">Run project commands</text>
-    <text x="802" y="398" fill="#5C6876" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="14">Fix real findings once</text>
+    <text x="802" y="398" fill="#5C6876" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="14">Reviewer worker pass</text>
   </g>
 
   <g filter="url(#shadow)">

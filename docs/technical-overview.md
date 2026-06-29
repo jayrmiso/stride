@@ -7,9 +7,9 @@ Stride Workflow is the repo-local workflow layer behind the `$stride ...` comman
 Chat commands:
 
 ```text
-$stride touch <small change>
-$stride frame <task>
-$stride carry
+$stride patch <small change>
+$stride spec <task>
+$stride impl
 $stride land
 $stride kit ui [from reference]
 $stride review
@@ -22,8 +22,8 @@ CLI commands:
 
 ```bash
 stride-workflow init [path] [--force] [--no-codex] [--yes]
-stride-workflow command <touch|frame|carry|land|kit|review|mend|status|workers>
-stride-workflow <touch|frame|carry|land|kit|review|mend|status|workers>
+stride-workflow command <patch|spec|impl|land|kit|review|mend|status|workers>
+stride-workflow <patch|spec|impl|land|kit|review|mend|status|workers>
 stride-workflow worktree <create|status|assert|cleanup> [slug-or-path]
 stride-workflow workers [path]
 stride-workflow subject [path]
@@ -58,10 +58,10 @@ When `init` runs against an existing Stride install, it shows a Stride changelog
 Tiny change:
 
 ```text
-$stride touch <small change>
+$stride patch <small change>
 ```
 
-Touch skips the frame/spec step only. It still uses the same worktree, checks, reviewer-worker, preview when useful, handoff, and ledger flow as carry.
+Patch skips the spec step only. It still uses the same worktree, builder-worker, checks, reviewer-worker, preview when useful, handoff, and ledger flow as impl.
 Even tiny changes use a Stride worktree so the edited checkout stays isolated.
 Installed repos also get a repo-local runner:
 
@@ -78,8 +78,8 @@ If the repo-local runner is missing or fails, Stride should stop and ask for an 
 Normal feature:
 
 ```text
-$stride frame <task>
-$stride carry
+$stride spec <task>
+$stride impl
 manual test the preview URL
 $stride land
 ```
@@ -111,17 +111,21 @@ $stride mend <issue>
   skills/
 .codex/
   agents/
-    stride-reviewer.toml
+    stridebuilder.toml
+    stridelead.toml
+    stridereviewer.toml
 AGENTS.md
 ```
 
 `AGENTS.md` tells Codex to route `$stride ...` chat commands through the `.stride/` files.
 
-`.codex/agents/stride-reviewer.toml` is the default worker used by touch, carry, and land to review the scoped diff without giving the worker write access.
+`.codex/agents/stridebuilder.toml` is the default editing worker used by patch and impl.
+`.codex/agents/stridereviewer.toml` is the default review worker used by patch, impl, and land to review the scoped diff without giving the worker write access.
+`.codex/agents/stridelead.toml` is optional for balance/heavy planning when scope or risk needs more thought.
 
 ## Token Posture
 
-Default Stride is intentionally lighter than a full multi-agent pipeline: the main chat builds, and one read-only reviewer worker checks the scoped diff. Broader discovery or debugging should escalate through `balance` or `heavy` only when the task justifies the token cost.
+Default Stride uses a small worker loop: the main chat orchestrates, `stridebuilder` edits, and `stridereviewer` checks the scoped diff. Broader planning, discovery, or debugging should escalate through `balance` or `heavy` only when the task justifies the token cost.
 
 ## Diagram
 

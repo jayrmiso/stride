@@ -2,7 +2,7 @@
 
 Role: manual-test guide.
 
-Used by: `$stride carry`, `$stride touch`, and `$stride mend`.
+Used by: `$stride impl`, `$stride patch`, and `$stride mend`.
 
 Output: `.stride/runs/current.md` and a final response card the user can rely on without scrolling through logs.
 
@@ -12,8 +12,9 @@ The handoff card must include:
 - active worktree path
 - active branch
 - worker mode used
+- builder worker result, or the reason it could not run
 - reviewer worker result, or the reason it could not run
-- suggested commit subject, derived from the frame/run context
+- suggested commit subject, derived from the spec/run context
 - preview URL when available
 - what changed
 - what the user should check manually

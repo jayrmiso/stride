@@ -1,6 +1,6 @@
 # Stride Workflow
 
-Stride Workflow is a Codex-first workflow tool for keeping repo work framed, isolated, and easy to hand off for manual testing.
+Stride Workflow is a Codex-first workflow tool for keeping repo work specified, isolated, reviewed, and easy to hand off for manual testing.
 
 ![Stride Workflow diagram](docs/stride-flow.svg)
 

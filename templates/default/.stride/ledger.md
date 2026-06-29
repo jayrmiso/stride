@@ -8,9 +8,9 @@ This file records durable project knowledge discovered while using Stride.
 
 ## Decisions
 
-- Stride is a frame-and-carry workflow, not a named-agent orchestration system.
+- Stride is a spec-and-impl workflow with explicit worker orchestration.
 - Token use should be value-aware, not merely minimized.
-- Core lifecycle is `$stride touch` for tiny changes or `$stride frame` -> `$stride carry` -> manual test -> `$stride land` for larger work.
+- Core lifecycle is `$stride patch` for tiny changes or `$stride spec` -> `$stride impl` -> manual test -> `$stride land` for larger work.
 - Frontend systemization uses `$stride kit ui`.
 
 ## Open Questions
