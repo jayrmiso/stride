@@ -10,6 +10,14 @@ Stride Workflow uses GitHub releases for every published update. Each release sh
 - install command
 - upgrade notes when behavior changes
 
+## [1.0.13] - 2026-06-29
+
+### Changed
+
+- Installed a repo-local Stride runner at `.stride/bin/stride-workflow.mjs` so Codex does not depend on a global `stride-workflow` binary being on PATH.
+- Updated Stride commands and skills to stop when the Stride runner is missing or fails instead of falling back to raw `git worktree` commands.
+- Made worktree status print the exact Stride runner command to reuse for later assertions from the active worktree.
+
 ## [1.0.12] - 2026-06-29
 
 ### Changed

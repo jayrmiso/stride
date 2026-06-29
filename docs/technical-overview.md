@@ -62,9 +62,17 @@ $stride touch <small change>
 ```
 
 Even tiny changes use a Stride worktree so the edited checkout stays isolated.
-`stride-workflow worktree create <task-slug>` creates or reuses `.stride/worktrees/<task-slug>`.
-`stride-workflow worktree assert` must pass from that worktree before Codex edits files.
-`stride-workflow worktree cleanup <path>` removes a Stride worktree after merge or explicit cleanup approval.
+Installed repos also get a repo-local runner:
+
+```bash
+node .stride/bin/stride-workflow.mjs <command>
+```
+
+`node .stride/bin/stride-workflow.mjs worktree create <task-slug>` creates or reuses `.stride/worktrees/<task-slug>`.
+The printed runner command's `worktree assert <active-worktree-path>` must pass before Codex edits files.
+The printed runner command's `worktree cleanup <path>` removes a Stride worktree after merge or explicit cleanup approval.
+
+If the repo-local runner is missing or fails, Stride should stop and ask for an update. It should not fall back to raw `git worktree` commands.
 
 Normal feature:
 
@@ -92,6 +100,8 @@ $stride mend <issue>
 
 ```text
 .stride/
+  bin/
+    stride-workflow.mjs
   commands/
   phases/
   config.md

@@ -20,6 +20,7 @@ const requiredPaths = [
   ".stride/config.md",
   ".stride/ledger.md",
   ".stride/version.txt",
+  ".stride/bin/stride-workflow.mjs",
   ".codex/agents/stride-reviewer.toml",
   ".agents/skills/stride/SKILL.md",
   ".agents/skills/stride-workers/SKILL.md",
@@ -380,7 +381,9 @@ function buildCodexBridge() {
     "- Route $stride commands through .stride/commands/.",
     "- Use .stride/phases/ for internal phase behavior.",
     "- Announce the active Stride phase before doing it.",
-    "- Do not edit application files until `stride-workflow worktree assert` passes inside the active Stride worktree.",
+    "- Use `node .stride/bin/stride-workflow.mjs ...` as the repo-local Stride runner.",
+    "- If the Stride runner is missing or fails, stop and ask the user to update Stride. Do not fall back to raw git worktree commands.",
+    "- Do not edit application files until the Stride runner's `worktree assert` passes for the active Stride worktree.",
     "- Spawn or use the stride-reviewer worker during carry and land before handoff.",
     "- Use .stride/runs/current.md for the latest manual-test handoff when it exists.",
     "- Use .stride/ledger.md for durable project facts.",
@@ -586,6 +589,12 @@ function resolveGitRoot(startDir) {
   return root;
 }
 
+function resolveStrideProjectDir(gitRoot) {
+  const marker = `${path.sep}.stride${path.sep}worktrees${path.sep}`;
+  const markerIndex = gitRoot.indexOf(marker);
+  return markerIndex === -1 ? gitRoot : gitRoot.slice(0, markerIndex);
+}
+
 function currentBranch(cwd) {
   return tryRunGit(["branch", "--show-current"], cwd) || "(detached)";
 }
@@ -673,14 +682,16 @@ function resolveBaseBranch(projectDir) {
 }
 
 function printWorktreeStatus(projectDir, worktreePath, branch) {
+  const runnerPath = path.join(projectDir, ".stride", "bin", "stride-workflow.mjs");
   console.log(`Project: ${projectDir}`);
+  console.log(`Stride runner: node ${runnerPath}`);
   console.log(`Active worktree path: ${worktreePath}`);
   console.log(`Active branch: ${branch}`);
   console.log(`On main/master: ${branch === "main" || branch === "master" ? "yes" : "no"}`);
 }
 
 function createStrideWorktree(args) {
-  const projectDir = resolveGitRoot(process.cwd());
+  const projectDir = resolveStrideProjectDir(resolveGitRoot(process.cwd()));
   const slug = sanitizeSlug(args[0]);
   const branch = `stride/${slug}`;
   const worktreePath = path.join(projectDir, ".stride", "worktrees", slug);
@@ -705,16 +716,17 @@ function createStrideWorktree(args) {
 }
 
 function statusStrideWorktree(args) {
-  const projectDir = resolveGitRoot(process.cwd());
+  const currentRoot = resolveGitRoot(process.cwd());
+  const projectDir = resolveStrideProjectDir(currentRoot);
   const target = args[0] ? path.resolve(args[0]) : null;
   const active = target
     ? { path: target, branch: currentBranch(target) }
-    : readActiveRunWorktree(projectDir) || { path: projectDir, branch: currentBranch(projectDir) };
+    : readActiveRunWorktree(projectDir) || { path: currentRoot, branch: currentBranch(currentRoot) };
   printWorktreeStatus(projectDir, active.path, active.branch);
 }
 
 function assertStrideWorktree(args) {
-  const projectDir = resolveGitRoot(process.cwd());
+  const projectDir = resolveStrideProjectDir(resolveGitRoot(process.cwd()));
   const target = args[0] ? path.resolve(args[0]) : process.cwd();
   const branch = currentBranch(target);
   const root = resolveGitRoot(target);
@@ -724,7 +736,7 @@ function assertStrideWorktree(args) {
   printWorktreeStatus(projectDir, root, branch);
 
   if (isMain) {
-    fail("refusing to continue from main/master; run `stride-workflow worktree create <slug>` and continue from that worktree");
+    fail("refusing to continue from main/master; run `node .stride/bin/stride-workflow.mjs worktree create <slug>` from the main checkout and continue from the printed worktree");
   }
 
   if (!isStrideWorktree) {
@@ -733,7 +745,7 @@ function assertStrideWorktree(args) {
 }
 
 function cleanupStrideWorktree(args) {
-  const projectDir = resolveGitRoot(process.cwd());
+  const projectDir = resolveStrideProjectDir(resolveGitRoot(process.cwd()));
   const deleteBranch = args.includes("--delete-branch");
   const cleanArgs = args.filter((arg) => arg !== "--delete-branch");
   const active = cleanArgs[0]
