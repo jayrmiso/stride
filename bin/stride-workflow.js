@@ -64,7 +64,7 @@ Usage:
   stride-workflow --help
 
 Commands:
-  init     Install .stride workflow files into a project.
+  init     Install or refresh .stride workflow files in a project.
   command  Print the instructions for one Stride Workflow command.
   doctor   Check whether a project has the expected Stride Workflow files.
   status   Show the current handoff, frame, and ledger for a project.
@@ -81,6 +81,23 @@ function ensureDir(dir) {
   fs.mkdirSync(dir, { recursive: true });
 }
 
+function syncFile(srcPath, destPath, options) {
+  const nextContent = fs.readFileSync(srcPath);
+  const existed = fs.existsSync(destPath);
+
+  if (existed) {
+    const currentContent = fs.readFileSync(destPath);
+    if (!options.force && currentContent.equals(nextContent)) {
+      console.log(`skip ${path.relative(options.cwd, destPath)} already up to date`);
+      return;
+    }
+  }
+
+  ensureDir(path.dirname(destPath));
+  fs.writeFileSync(destPath, nextContent);
+  console.log(`${existed ? "update" : "write"} ${path.relative(options.cwd, destPath)}`);
+}
+
 function copyDir(src, dest, options) {
   ensureDir(dest);
 
@@ -93,13 +110,7 @@ function copyDir(src, dest, options) {
       continue;
     }
 
-    if (!options.force && fs.existsSync(destPath)) {
-      console.log(`skip ${path.relative(options.cwd, destPath)} already exists`);
-      continue;
-    }
-
-    fs.copyFileSync(srcPath, destPath);
-    console.log(`write ${path.relative(options.cwd, destPath)}`);
+    syncFile(srcPath, destPath, options);
   }
 }
 

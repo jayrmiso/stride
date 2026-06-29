@@ -10,6 +10,12 @@ Stride Workflow uses GitHub releases for every published update. Each release sh
 - install command
 - upgrade notes when behavior changes
 
+## [1.0.4] - 2026-06-29
+
+### Changed
+
+- Made `stride-workflow init` refresh existing managed `.stride` and `.agents` files so already-installed Stride setups can update in place.
+
 ## [1.0.3] - 2026-06-29
 
 ### Changed
