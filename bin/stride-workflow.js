@@ -3,6 +3,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
+import { createInterface } from "node:readline/promises";
 import { fileURLToPath } from "node:url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -65,9 +66,9 @@ function usage() {
   return `stride-workflow
 
 Usage:
-  stride-workflow init [path] [--force] [--no-codex]
+  stride-workflow init [path] [--force] [--no-codex] [--yes]
   stride-workflow command <touch|frame|carry|land|kit|review|mend|status|workers>
-  stride-workflow <touch|frame|carry|land|kit|review|mend|status>
+  stride-workflow <touch|frame|carry|land|kit|review|mend|status|workers>
   stride-workflow workers [path]
   stride-workflow subject [path]
   stride-workflow status [path]
@@ -95,21 +96,43 @@ function ensureDir(dir) {
   fs.mkdirSync(dir, { recursive: true });
 }
 
-function syncFile(srcPath, destPath, options) {
-  const nextContent = fs.readFileSync(srcPath);
-  const existed = fs.existsSync(destPath);
+function collectDirChanges(srcDir, destDir, options, changes = []) {
+  for (const entry of fs.readdirSync(srcDir, { withFileTypes: true })) {
+    const srcPath = path.join(srcDir, entry.name);
+    const destPath = path.join(destDir, entry.name);
 
-  if (existed) {
-    const currentContent = fs.readFileSync(destPath);
-    if (!options.force && currentContent.equals(nextContent)) {
-      console.log(`skip ${path.relative(options.cwd, destPath)} already up to date`);
-      return;
+    if (entry.isDirectory()) {
+      collectDirChanges(srcPath, destPath, options, changes);
+      continue;
     }
+
+    const nextContent = fs.readFileSync(srcPath);
+    const existed = fs.existsSync(destPath);
+
+    if (existed) {
+      const currentContent = fs.readFileSync(destPath);
+      if (!options.force && currentContent.equals(nextContent)) {
+        continue;
+      }
+    }
+
+    changes.push({
+      action: existed ? "update" : "write",
+      relPath: path.relative(options.cwd, destPath),
+      srcPath,
+      destPath,
+    });
   }
 
-  ensureDir(path.dirname(destPath));
-  fs.writeFileSync(destPath, nextContent);
-  console.log(`${existed ? "update" : "write"} ${path.relative(options.cwd, destPath)}`);
+  return changes;
+}
+
+function applyDirChanges(changes, options) {
+  for (const change of changes) {
+    ensureDir(path.dirname(change.destPath));
+    fs.writeFileSync(change.destPath, fs.readFileSync(change.srcPath));
+    console.log(`${change.action} ${change.relPath}`);
+  }
 }
 
 function normalizeText(value) {
@@ -265,28 +288,66 @@ function upsertCodexBridge(existingContent) {
   return `${existingContent}${separator}${bridge}\n`;
 }
 
-function writeCodexBridge(projectDir, force) {
+function collectCodexBridgeChange(projectDir) {
   const target = path.join(projectDir, "AGENTS.md");
   const existed = fs.existsSync(target);
-  const nextBody = fs.existsSync(target)
-    ? upsertCodexBridge(fs.readFileSync(target, "utf8"))
-    : `${buildCodexBridge()}\n`;
+  const currentBody = existed ? fs.readFileSync(target, "utf8") : "";
+  const nextBody = existed ? upsertCodexBridge(currentBody) : `${buildCodexBridge()}\n`;
 
-  if (existed && !force) {
-    const currentBody = fs.readFileSync(target, "utf8");
-    if (currentBody === nextBody) {
-      console.log("skip AGENTS.md already contains the Stride Workflow bridge");
-      return;
-    }
+  if (currentBody === nextBody) {
+    return null;
   }
 
-  fs.writeFileSync(target, nextBody);
-  console.log(existed ? "update AGENTS.md" : "write AGENTS.md");
+  return {
+    action: existed ? "update" : "write",
+    relPath: path.relative(projectDir, target) || "AGENTS.md",
+    target,
+    nextBody,
+    existed,
+  };
 }
 
-function initProject(args) {
+function applyCodexBridgeChange(change) {
+  fs.writeFileSync(change.target, change.nextBody);
+  console.log(`${change.action} ${change.relPath}`);
+}
+
+function hasExistingStride(projectDir) {
+  return fs.existsSync(path.join(projectDir, ".stride")) || fs.existsSync(path.join(projectDir, ".agents")) || fs.existsSync(path.join(projectDir, "AGENTS.md"));
+}
+
+function formatUpdateSummary(changes) {
+  const lines = ["Stride Workflow update summary:"];
+  for (const change of changes) {
+    lines.push(`- ${change.action} ${change.relPath}`);
+  }
+  return `${lines.join("\n")}\n`;
+}
+
+async function confirmUpdate(projectDir, changes) {
+  if (changes.length === 0) return true;
+
+  process.stdout.write(`Stride Workflow updates available in ${projectDir}\n`);
+  process.stdout.write(formatUpdateSummary(changes));
+
+  if (!process.stdin.isTTY || !process.stdout.isTTY) {
+    process.stdout.write("Non-interactive session detected; applying updates.\n");
+    return true;
+  }
+
+  const rl = createInterface({ input: process.stdin, output: process.stdout });
+  try {
+    const answer = (await rl.question("Update existing Stride install? [y/N] ")).trim().toLowerCase();
+    return answer === "y" || answer === "yes";
+  } finally {
+    rl.close();
+  }
+}
+
+async function initProject(args) {
   const force = args.includes("--force");
   const noCodex = args.includes("--no-codex");
+  const yes = args.includes("--yes");
   const cleanArgs = args.filter((arg) => !arg.startsWith("--"));
   const projectDir = path.resolve(cleanArgs[0] ?? process.cwd());
 
@@ -294,18 +355,44 @@ function initProject(args) {
     fail(`missing template directory: ${templateDir}`);
   }
 
-  ensureDir(projectDir);
-  copyDir(path.join(templateDir, ".stride"), path.join(projectDir, ".stride"), {
+  const existingStride = hasExistingStride(projectDir);
+  const strideChanges = collectDirChanges(path.join(templateDir, ".stride"), path.join(projectDir, ".stride"), {
     cwd: projectDir,
     force,
   });
-  copyDir(path.join(templateDir, ".agents"), path.join(projectDir, ".agents"), {
-    cwd: projectDir,
-    force,
-  });
+  const agentChanges = noCodex
+    ? []
+    : collectDirChanges(path.join(templateDir, ".agents"), path.join(projectDir, ".agents"), {
+        cwd: projectDir,
+        force,
+      });
+  const bridgeChange = noCodex ? null : collectCodexBridgeChange(projectDir);
+  const changes = [...strideChanges, ...agentChanges, ...(bridgeChange ? [bridgeChange] : [])];
 
+  if (existingStride && changes.length > 0 && !yes && !force) {
+    const shouldUpdate = await confirmUpdate(projectDir, changes);
+    if (!shouldUpdate) {
+      console.log("Skipped updating existing Stride install.");
+      return;
+    }
+  }
+
+  ensureDir(projectDir);
+  ensureDir(path.join(projectDir, ".stride"));
+  applyDirChanges(strideChanges, {
+    cwd: projectDir,
+    force,
+  });
   if (!noCodex) {
-    writeCodexBridge(projectDir, force);
+    ensureDir(path.join(projectDir, ".agents"));
+    applyDirChanges(agentChanges, {
+      cwd: projectDir,
+      force,
+    });
+
+    if (bridgeChange) {
+      applyCodexBridgeChange(bridgeChange);
+    }
   }
 
   console.log("");
@@ -380,42 +467,46 @@ function suggestSubject(args) {
 
 const [, , command, ...args] = process.argv;
 
-if (!command || command === "--help" || command === "-h") {
-  process.stdout.write(usage());
-  process.exit(0);
+async function main() {
+  if (!command || command === "--help" || command === "-h") {
+    process.stdout.write(usage());
+    process.exit(0);
+  }
+
+  switch (command) {
+    case "init":
+      await initProject(args);
+      break;
+    case "command":
+      printCommand(args);
+      break;
+    case "doctor":
+      doctor(args);
+      break;
+    case "status":
+      showStatus(args);
+      break;
+    case "subject":
+      suggestSubject(args);
+      break;
+    case "version":
+    case "--version":
+    case "-v":
+      version();
+      break;
+    case "touch":
+    case "frame":
+    case "carry":
+    case "land":
+    case "kit":
+    case "review":
+    case "mend":
+    case "workers":
+      printCommandByName(command);
+      break;
+    default:
+      fail(`unknown command "${command}"\n\n${usage()}`);
+  }
 }
 
-switch (command) {
-  case "init":
-    initProject(args);
-    break;
-  case "command":
-    printCommand(args);
-    break;
-  case "doctor":
-    doctor(args);
-    break;
-  case "status":
-    showStatus(args);
-    break;
-  case "subject":
-    suggestSubject(args);
-    break;
-  case "version":
-  case "--version":
-  case "-v":
-    version();
-    break;
-  case "touch":
-  case "frame":
-  case "carry":
-  case "land":
-  case "kit":
-  case "review":
-  case "mend":
-  case "workers":
-    printCommandByName(command);
-    break;
-  default:
-    fail(`unknown command "${command}"\n\n${usage()}`);
-}
+await main();
