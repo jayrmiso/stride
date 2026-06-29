@@ -21,8 +21,10 @@ CLI commands:
 
 ```bash
 stride-workflow init [path] [--force] [--no-codex]
-stride-workflow command <touch|frame|carry|land|kit|review|mend|status>
+stride-workflow command <touch|frame|carry|land|kit|review|mend|status|workers>
 stride-workflow <touch|frame|carry|land|kit|review|mend|status>
+stride-workflow workers [path]
+stride-workflow subject [path]
 stride-workflow status [path]
 stride-workflow doctor [path]
 stride-workflow version

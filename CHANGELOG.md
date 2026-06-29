@@ -10,6 +10,13 @@ Stride Workflow uses GitHub releases for every published update. Each release sh
 - install command
 - upgrade notes when behavior changes
 
+## [1.0.6] - 2026-06-29
+
+### Changed
+
+- Added a `workers` command and worker skill that makes the default mode use one reviewer worker while keeping the main thread as builder.
+- Updated the CLI help and technical overview to include `workers`.
+
 ## [1.0.5] - 2026-06-29
 
 ### Changed

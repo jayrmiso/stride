@@ -12,11 +12,12 @@ const packageJson = JSON.parse(fs.readFileSync(path.join(rootDir, "package.json"
 const agentsBridgeStart = "<!-- stride-workflow:start -->";
 const agentsBridgeEnd = "<!-- stride-workflow:end -->";
 
-const commandNames = ["touch", "frame", "carry", "land", "kit", "review", "mend", "status"];
+const commandNames = ["touch", "frame", "carry", "land", "kit", "review", "mend", "status", "workers"];
 const requiredPaths = [
   ".stride/config.md",
   ".stride/ledger.md",
   ".agents/skills/stride/SKILL.md",
+  ".agents/skills/stride-workers/SKILL.md",
   ".agents/skills/stride-touch/SKILL.md",
   ".agents/skills/stride-frame/SKILL.md",
   ".agents/skills/stride-carry/SKILL.md",
@@ -33,6 +34,7 @@ const requiredPaths = [
   ".stride/commands/review.md",
   ".stride/commands/mend.md",
   ".stride/commands/status.md",
+  ".stride/commands/workers.md",
   ".stride/phases/intake.md",
   ".stride/phases/probe.md",
   ".stride/phases/framer.md",
@@ -49,6 +51,7 @@ const requiredPaths = [
   ".stride/phases/kit-designer.md",
   ".stride/phases/migrator.md",
   ".stride/phases/ledger.md",
+  ".stride/phases/workers.md",
 ];
 const commitTypeKeywords = [
   { type: "docs", keywords: ["docs", "documentation", "readme", "guide", "wording", "copy"] },
@@ -63,8 +66,9 @@ function usage() {
 
 Usage:
   stride-workflow init [path] [--force] [--no-codex]
-  stride-workflow command <touch|frame|carry|land|kit|review|mend|status>
+  stride-workflow command <touch|frame|carry|land|kit|review|mend|status|workers>
   stride-workflow <touch|frame|carry|land|kit|review|mend|status>
+  stride-workflow workers [path]
   stride-workflow subject [path]
   stride-workflow status [path]
   stride-workflow doctor [path]
@@ -74,6 +78,7 @@ Usage:
 Commands:
   init     Install or refresh .stride workflow files in a project.
   command  Print the instructions for one Stride Workflow command.
+  workers  Print the worker policy for token-aware execution.
   subject  Suggest a conventional commit subject from the active frame and handoff.
   doctor   Check whether a project has the expected Stride Workflow files.
   status   Show the current handoff, frame, and ledger for a project.
@@ -408,6 +413,7 @@ switch (command) {
   case "kit":
   case "review":
   case "mend":
+  case "workers":
     printCommandByName(command);
     break;
   default:
