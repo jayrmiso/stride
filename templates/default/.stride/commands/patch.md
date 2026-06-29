@@ -22,6 +22,7 @@ Rules:
 - Use the user request as the approved scope. If the scope is unclear or broader than a patch, stop and ask for `$stride spec`.
 - Choose the default worker mode before editing unless the task clearly needs balance or heavy mode.
 - The main chat is the orchestrator. Do not edit application files directly in the main chat during patch.
+- Once `stridebuilder` is spawned, the main chat must stop editing and only coordinate, verify, and hand off. The builder worker owns all file writes for the scoped change.
 - Default worker mode means `stridebuilder` edits and `stridereviewer` reviews.
 - Keep the edit local.
 - Use the repo-local Stride runner: `node .stride/bin/stride-workflow.mjs`.

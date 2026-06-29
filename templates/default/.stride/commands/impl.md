@@ -18,6 +18,7 @@ workers(default: stridebuilder + stridereviewer) -> worktree -> load spec -> lig
 
 - Read `.stride/specs/current.md` before editing.
 - The main chat is the orchestrator. Do not edit application files directly in the main chat during impl.
+- Once `stridebuilder` is spawned, the main chat must stop editing and only coordinate, verify, and hand off. The builder worker owns all file writes for the scoped change.
 - Choose the default worker mode before editing unless the task clearly needs balance or heavy mode.
 - Default worker mode means `stridebuilder` edits and `stridereviewer` reviews.
 - Use the repo-local Stride runner: `node .stride/bin/stride-workflow.mjs`.

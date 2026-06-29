@@ -26,6 +26,7 @@ Use this skill when working in a repository that has Stride Workflow installed a
 - Run the Stride runner's `worktree assert <active-worktree-path>` before editing; stop if it fails.
 - Announce each Stride phase before doing it.
 - For patch and impl, spawn or use `stridebuilder` to edit inside the active worktree.
+- Once `stridebuilder` is spawned, stop editing in the main chat and use the main chat only to coordinate, verify, and hand off.
 - For patch, impl, and land, spawn or use `stridereviewer` against the scoped diff before handoff.
 - Keep worktree, spec, impl, review, and handoff behavior aligned with the installed Stride files.
 - Update `.stride/ledger.md` when you learn something durable.
