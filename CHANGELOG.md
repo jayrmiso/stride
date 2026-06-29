@@ -10,6 +10,14 @@ Stride Workflow uses GitHub releases for every published update. Each release sh
 - install command
 - upgrade notes when behavior changes
 
+## [1.0.1] - 2026-06-29
+
+### Added
+
+- Added a real Codex skill install so `\$stride` can surface in repo skill lists.
+- Added `.agents/skills/stride/SKILL.md` to the init template.
+- Made `stride-workflow init` append its `AGENTS.md` bridge instead of skipping existing files.
+
 ## [1.0.0] - 2026-06-28
 
 Initial release.
