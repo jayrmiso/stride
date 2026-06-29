@@ -9,6 +9,8 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(__dirname, "..");
 const templateDir = path.join(rootDir, "templates", "default");
 const packageJson = JSON.parse(fs.readFileSync(path.join(rootDir, "package.json"), "utf8"));
+const agentsBridgeStart = "<!-- stride-workflow:start -->";
+const agentsBridgeEnd = "<!-- stride-workflow:end -->";
 
 const commandNames = ["touch", "frame", "carry", "land", "kit", "review", "mend", "status"];
 const requiredPaths = [
@@ -92,33 +94,62 @@ function copyDir(src, dest, options) {
   }
 }
 
-function writeCodexBridge(projectDir, force) {
-  const target = path.join(projectDir, "AGENTS.md");
-  const body = `# Stride Workflow
+function buildCodexBridge() {
+  return [
+    agentsBridgeStart,
+    "# Stride Workflow",
+    "",
+    "This repo uses Stride Workflow, an adaptive-depth workflow for Codex.",
+    "",
+    "Before substantial work:",
+    "",
+    "- Read .stride/config.md.",
+    "- Route $stride commands through .stride/commands/.",
+    "- Use .stride/phases/ for internal phase behavior.",
+    "- Use .stride/runs/current.md for the latest manual-test handoff when it exists.",
+    "- Use .stride/ledger.md for durable project facts.",
+    "- Update the ledger when a discovery should survive future turns.",
+    "",
+    "Primary loop: $stride frame -> approval -> $stride carry -> manual test -> $stride land.",
+    "Tiny changes can use $stride touch.",
+    "UI consistency and screenshot-inspired frontend work can use $stride kit ui.",
+    agentsBridgeEnd,
+  ].join("\n");
+}
 
-This repo uses Stride Workflow, an adaptive-depth workflow for Codex.
+function upsertCodexBridge(existingContent) {
+  const bridge = buildCodexBridge();
+  const existingStart = existingContent.indexOf(agentsBridgeStart);
+  const existingEnd = existingContent.indexOf(agentsBridgeEnd);
 
-Before substantial work:
-
-- Read .stride/config.md.
-- Route $stride commands through .stride/commands/.
-- Use .stride/phases/ for internal phase behavior.
-- Use .stride/runs/current.md for the latest manual-test handoff when it exists.
-- Use .stride/ledger.md for durable project facts.
-- Update the ledger when a discovery should survive future turns.
-
-Primary loop: $stride frame -> approval -> $stride carry -> manual test -> $stride land.
-Tiny changes can use $stride touch.
-UI consistency and screenshot-inspired frontend work can use $stride kit ui.
-`;
-
-  if (!force && fs.existsSync(target)) {
-    console.log("skip AGENTS.md already exists");
-    return;
+  if (existingStart !== -1 && existingEnd !== -1 && existingEnd >= existingStart) {
+    return existingContent.replace(
+      new RegExp(`\\n?${agentsBridgeStart.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}[\\s\\S]*?${agentsBridgeEnd.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\n?`, "m"),
+      `\n${bridge}\n`,
+    );
   }
 
-  fs.writeFileSync(target, body);
-  console.log("write AGENTS.md");
+  const separator = existingContent.length === 0 ? "" : existingContent.endsWith("\n") ? "\n" : "\n\n";
+  return `${existingContent}${separator}${bridge}\n`;
+}
+
+function writeCodexBridge(projectDir, force) {
+  const target = path.join(projectDir, "AGENTS.md");
+  const existed = fs.existsSync(target);
+  const nextBody = fs.existsSync(target)
+    ? upsertCodexBridge(fs.readFileSync(target, "utf8"))
+    : `${buildCodexBridge()}\n`;
+
+  if (existed && !force) {
+    const currentBody = fs.readFileSync(target, "utf8");
+    if (currentBody === nextBody) {
+      console.log("skip AGENTS.md already contains the Stride Workflow bridge");
+      return;
+    }
+  }
+
+  fs.writeFileSync(target, nextBody);
+  console.log(existed ? "update AGENTS.md" : "write AGENTS.md");
 }
 
 function initProject(args) {
