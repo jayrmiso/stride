@@ -16,6 +16,7 @@ const commandNames = ["touch", "frame", "carry", "land", "kit", "review", "mend"
 const requiredPaths = [
   ".stride/config.md",
   ".stride/ledger.md",
+  ".agents/skills/stride/SKILL.md",
   ".stride/commands/touch.md",
   ".stride/commands/frame.md",
   ".stride/commands/carry.md",
@@ -164,6 +165,10 @@ function initProject(args) {
 
   ensureDir(projectDir);
   copyDir(path.join(templateDir, ".stride"), path.join(projectDir, ".stride"), {
+    cwd: projectDir,
+    force,
+  });
+  copyDir(path.join(templateDir, ".agents"), path.join(projectDir, ".agents"), {
     cwd: projectDir,
     force,
   });
