@@ -10,6 +10,14 @@ Stride Workflow uses GitHub releases for every published update. Each release sh
 - install command
 - upgrade notes when behavior changes
 
+## [1.0.11] - 2026-06-29
+
+### Changed
+
+- Added the `stride-reviewer` Codex agent template so default worker mode installs a real reviewer worker.
+- Strengthened carry and land so they announce phases, require the worktree before editing or landing, and run reviewer-worker review before handoff or commit.
+- Tightened touch so even tiny edits announce phases and stop instead of editing from `main` or `master`.
+
 ## [1.0.10] - 2026-06-29
 
 ### Changed

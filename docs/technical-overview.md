@@ -15,6 +15,7 @@ $stride kit ui [from reference]
 $stride review
 $stride mend <issue>
 $stride status
+$stride workers
 ```
 
 CLI commands:
@@ -91,10 +92,17 @@ $stride mend <issue>
   phases/
   config.md
   ledger.md
+.agents/
+  skills/
+.codex/
+  agents/
+    stride-reviewer.toml
 AGENTS.md
 ```
 
 `AGENTS.md` tells Codex to route `$stride ...` chat commands through the `.stride/` files.
+
+`.codex/agents/stride-reviewer.toml` is the default worker used by carry and land to review the scoped diff without giving the worker write access.
 
 ## Diagram
 

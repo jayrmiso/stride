@@ -19,6 +19,7 @@ const requiredPaths = [
   ".stride/config.md",
   ".stride/ledger.md",
   ".stride/version.txt",
+  ".codex/agents/stride-reviewer.toml",
   ".agents/skills/stride/SKILL.md",
   ".agents/skills/stride-workers/SKILL.md",
   ".agents/skills/stride-touch/SKILL.md",
@@ -375,6 +376,9 @@ function buildCodexBridge() {
     "- Read .stride/config.md.",
     "- Route $stride commands through .stride/commands/.",
     "- Use .stride/phases/ for internal phase behavior.",
+    "- Announce the active Stride phase before doing it.",
+    "- Do not edit application files until the Stride worktree phase is complete.",
+    "- Spawn or use the stride-reviewer worker during carry and land before handoff.",
     "- Use .stride/runs/current.md for the latest manual-test handoff when it exists.",
     "- Use .stride/ledger.md for durable project facts.",
     "- Update the ledger when a discovery should survive future turns.",
@@ -427,7 +431,7 @@ function applyCodexBridgeChange(change) {
 }
 
 function hasExistingStride(projectDir) {
-  return fs.existsSync(path.join(projectDir, ".stride")) || fs.existsSync(path.join(projectDir, ".agents")) || fs.existsSync(path.join(projectDir, "AGENTS.md"));
+  return fs.existsSync(path.join(projectDir, ".stride")) || fs.existsSync(path.join(projectDir, ".agents")) || fs.existsSync(path.join(projectDir, ".codex")) || fs.existsSync(path.join(projectDir, "AGENTS.md"));
 }
 
 async function confirmUpdate(projectDir, summary) {
@@ -471,8 +475,14 @@ async function initProject(args) {
         cwd: projectDir,
         force,
   });
+  const codexChanges = noCodex
+    ? []
+    : collectDirChanges(path.join(templateDir, ".codex"), path.join(projectDir, ".codex"), {
+        cwd: projectDir,
+        force,
+      });
   const bridgeChange = noCodex ? null : collectCodexBridgeChange(projectDir);
-  const changes = [...strideChanges, ...agentChanges, ...(bridgeChange ? [bridgeChange] : [])];
+  const changes = [...strideChanges, ...agentChanges, ...codexChanges, ...(bridgeChange ? [bridgeChange] : [])];
   const needsVersionUpdate = installedVersion !== packageJson.version;
   const shouldPrompt = existingStride && (changes.length > 0 || needsVersionUpdate) && !yes && !force;
 
@@ -493,6 +503,11 @@ async function initProject(args) {
   if (!noCodex) {
     ensureDir(path.join(projectDir, ".agents"));
     applyDirChanges(agentChanges, {
+      cwd: projectDir,
+      force,
+    });
+    ensureDir(path.join(projectDir, ".codex"));
+    applyDirChanges(codexChanges, {
       cwd: projectDir,
       force,
     });
