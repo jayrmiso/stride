@@ -10,6 +10,14 @@ Stride Workflow uses GitHub releases for every published update. Each release sh
 - install command
 - upgrade notes when behavior changes
 
+## [1.0.38] - 2026-06-30
+
+### Changed
+
+- Made the handoff contract invalid unless the app was started from the active worktree and a preview URL is recorded.
+- Required the previewer to block instead of writing a handoff when it cannot start the app from the active worktree.
+- Reinforced the same requirement in the generated Codex bridge so the final user-facing card always tells the user what to open and verify.
+
 ## [1.0.37] - 2026-06-30
 
 ### Changed
