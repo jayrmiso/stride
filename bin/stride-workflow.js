@@ -47,6 +47,7 @@ const requiredPaths = [
   ".codex/agents/strideuiauditor.toml",
   ".codex/agents/stridereviewer.toml",
   ".agents/skills/stride/SKILL.md",
+  ".agents/skills/stridetouch/SKILL.md",
   ".agents/skills/strideworkers/SKILL.md",
   ".agents/skills/stridepatch/SKILL.md",
   ".agents/skills/stridespec/SKILL.md",

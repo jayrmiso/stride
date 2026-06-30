@@ -10,6 +10,14 @@ Stride Workflow uses GitHub releases for every published update. Each release sh
 - install command
 - upgrade notes when behavior changes
 
+## [1.0.41] - 2026-06-30
+
+### Changed
+
+- Added the missing `stridetouch` skill so the fast touch path shows up after install.
+- Wired the installer to include the touch skill in the generated `.agents` bundle.
+- Kept `touch` as the lightweight path for tiny local edits.
+
 ## [1.0.40] - 2026-06-30
 
 ### Changed
