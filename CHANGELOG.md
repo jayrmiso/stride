@@ -38,6 +38,29 @@ Stride Workflow uses GitHub releases for every published update. Each release sh
 
 - Updated the installer docs so refresh is the explicit clean reinstall path while `init` remains the normal update path.
 
+## [1.0.21] - 2026-06-30
+
+### Changed
+
+- Tightened the worker contract so visual verification stays inside `strideuiauditor` and previewer flow instead of moving back into the main chat.
+- Made the UI auditor and handoff phases return blocked when Playwright-backed verification cannot run, rather than inventing a manual fallback in the orchestrator.
+- Clarified the manual-test handoff so it always records the live route, change summary, and concrete check list when a preview exists.
+
+## [1.0.22] - 2026-06-30
+
+### Changed
+
+- Added `playwright` as a Stride dependency so the UI auditor has a bundled Playwright runtime available.
+- Made `stride-workflow doctor` report a missing Playwright dependency as a blocking install problem.
+- Documented that visual auditing depends on the bundled Playwright path instead of an external browser fallback.
+
+## [1.0.23] - 2026-06-30
+
+### Changed
+
+- Made `stride-workflow doctor` verify both the Playwright package and the Chromium browser binary.
+- Installed Playwright Chromium in the local package so the bundled visual-audit path is runnable.
+
 ## [1.0.17] - 2026-06-30
 
 ### Changed

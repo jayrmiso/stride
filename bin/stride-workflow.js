@@ -6,11 +6,13 @@ import path from "node:path";
 import process from "node:process";
 import { createInterface } from "node:readline/promises";
 import { fileURLToPath } from "node:url";
+import { createRequire } from "node:module";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(__dirname, "..");
 const templateDir = path.join(rootDir, "templates", "default");
 const packageJson = JSON.parse(fs.readFileSync(path.join(rootDir, "package.json"), "utf8"));
+const requireFromHere = createRequire(import.meta.url);
 const agentsBridgeStart = "<!-- stride-workflow:start -->";
 const agentsBridgeEnd = "<!-- stride-workflow:end -->";
 
@@ -151,6 +153,19 @@ function writeInstalledStrideVersion(projectDir) {
   const filePath = path.join(projectDir, strideVersionFile);
   ensureDir(path.dirname(filePath));
   fs.writeFileSync(filePath, `${packageJson.version}\n`);
+}
+
+function checkPlaywrightAvailability() {
+  try {
+    const playwright = requireFromHere("playwright");
+    const executablePath = playwright.chromium?.executablePath?.();
+    if (!executablePath || !fs.existsSync(executablePath)) {
+      return "missing Playwright Chromium browser binary required for strideuiauditor";
+    }
+    return null;
+  } catch {
+    return "missing playwright dependency required for strideuiauditor";
+  }
 }
 
 function collectDirChanges(srcDir, destDir, options, changes = []) {
@@ -905,6 +920,11 @@ function doctor(args) {
   });
   const installedVersion = readInstalledStrideVersion(projectDir);
   const problems = [...missing.map((missingPath) => `missing ${missingPath}`)];
+  const playwrightProblem = checkPlaywrightAvailability();
+
+  if (playwrightProblem) {
+    problems.push(playwrightProblem);
+  }
 
   if (installedVersion && installedVersion !== packageJson.version) {
     problems.push(`installed version ${installedVersion} does not match CLI version ${packageJson.version}`);
