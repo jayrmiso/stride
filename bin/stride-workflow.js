@@ -493,6 +493,7 @@ function buildCodexBridge() {
     "- Treat the main chat as orchestrator for patch, impl, and land.",
     "- The main chat is the brain, not the hands: it coordinates and hands off, but does not keep editing once a worker owns the scope.",
     "- If the main chat has spawned `stridebuilder` for a scoped change, it must stop writing files for that scope and only coordinate, verify, and hand off.",
+    "- Before patch or impl proceeds, a `stridebuilder` worker must actually be spawned; if it cannot be spawned, the run is blocked and the main chat must stop.",
     "- Spawn or use stridebuilder for patch and impl implementation work.",
     "- Use stridelead as the read-only recon worker when extra repo facts are needed.",
     "- Use strideuiauditor as the read-only visual auditor for user-facing or layout-sensitive work before preview and handoff. It should inspect the live UI with Playwright when a route is available.",

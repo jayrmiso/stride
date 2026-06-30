@@ -10,6 +10,14 @@ Stride Workflow uses GitHub releases for every published update. Each release sh
 - install command
 - upgrade notes when behavior changes
 
+## [1.0.35] - 2026-06-30
+
+### Changed
+
+- Tightened the handoff and previewer wording so the final response must read like a direct user instruction card.
+- Clarified that the orchestrator should start the app from the active worktree, name the preview URL, and tell the user exactly what to test next.
+- Removed the last bit of internal-document phrasing from the handoff guidance so it is easier to read as a command to the user.
+
 ## [1.0.33] - 2026-06-30
 
 ### Changed

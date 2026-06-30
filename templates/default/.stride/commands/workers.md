@@ -32,6 +32,7 @@ Rules:
 - Patch, impl, and land should use default mode unless a stronger mode is justified.
 - Default patch and impl require at least one `stridebuilder` for edits and at least one `stridereviewer` for the scoped diff.
 - Default land requires at least one `stridereviewer` for the final scoped diff.
+- Default patch and impl must actually spawn the `stridebuilder` worker before implementation proceeds. If the builder cannot be spawned, stop and report the workflow limitation instead of continuing in the main chat.
 - If a required worker is unavailable, stop and report the workflow limitation. Do not silently do the worker's job in the main chat.
 - Do not add `stridelead` for small changes unless the repo facts are unclear or risky.
 - Do not spawn extra builders or reviewers in default mode unless the task is clearly split into independent scoped parts.

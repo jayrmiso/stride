@@ -17,6 +17,8 @@ If the builder worker already owns the scope, the handoff phase must not invent 
 If the worker flow could not produce a preview URL or visual verification, return Blocked instead of inventing a main-chat fallback.
 If the route is auth-gated, include the authenticated Playwright context or bootstrap note so the ui auditor can reuse it.
 The final handoff response must always include three plain-language items: what changed, how to verify it, and what to do next.
+The final handoff response must be a direct user-facing instruction card, not a reference to internal markdown files or logs.
+It should say that the app was started from the active worktree, name the preview URL, and tell the user exactly what to test next.
 Show the task as a short milestone checklist that mirrors the current flow:
 - `Task:`
 - `- [ ] <current milestone 1>`
