@@ -10,6 +10,14 @@ Stride Workflow uses GitHub releases for every published update. Each release sh
 - install command
 - upgrade notes when behavior changes
 
+## [1.0.29] - 2026-06-30
+
+### Changed
+
+- Clarified that extra builders are for separate independent slices of work, not for replacing a worker that is still running on the same scope.
+- Tightened the orchestrator rules so the main chat waits for an active worker to finish instead of reassigning the same slice early.
+- Updated the generated bridge and worker guidance to say that a second worker is only appropriate when the work can actually be split cleanly.
+
 ## [1.0.28] - 2026-06-30
 
 ### Changed
