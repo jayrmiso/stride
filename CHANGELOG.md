@@ -20,6 +20,14 @@ Stride Workflow uses GitHub releases for every published update. Each release sh
 - Updated the kit flow to include a final Playwright-backed visual audit pass.
 - Clarified that builder and reviewer should apply OOP, SOLID, clean architecture, and clean code principles when they help the result, without forcing unnecessary abstraction.
 
+## [1.0.19] - 2026-06-30
+
+### Changed
+
+- Made `strideuiauditor` Playwright-only for live UI checks.
+- Tightened the preview and handoff flow so the run record must include what changed and what the user should manually verify next.
+- Clarified the previewer and handoff phases so user-facing work records the live route, change summary, and concrete manual-check items.
+
 ## [1.0.17] - 2026-06-30
 
 ### Changed
