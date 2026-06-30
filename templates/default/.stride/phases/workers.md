@@ -23,6 +23,7 @@ Decision rule:
 - `stridelead` is read-only recon, not a writing or planning worker
 - extra builders or reviewers are only for clearly separate scoped parts or explicitly heavier work
 - `strideuiauditor` is the visual auditor for user-facing UI work; use it before preview and handoff, and prefer Playwright against the live app when a route is available
+- if the worker ceiling is hit, wait for the active worker to finish or close an idle worker before proceeding; do not switch the main chat into implementation mode
 - if the builder cannot be spawned, the run is blocked and the main chat must stop rather than improvising the implementation itself
 - every patch, impl, and land handoff should say whether the reviewer worker ran
 - every patch and impl handoff should say whether the builder worker ran

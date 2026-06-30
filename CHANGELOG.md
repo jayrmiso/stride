@@ -10,6 +10,13 @@ Stride Workflow uses GitHub releases for every published update. Each release sh
 - install command
 - upgrade notes when behavior changes
 
+## [1.0.37] - 2026-06-30
+
+### Changed
+
+- Clarified that when the worker ceiling is hit, the orchestrator must wait for an active worker to finish or close an idle worker before continuing.
+- Reinforced the same rule across patch, impl, workers, land, and the generated Codex bridge so the main chat stays out of the write path.
+
 ## [1.0.36] - 2026-06-30
 
 ### Changed

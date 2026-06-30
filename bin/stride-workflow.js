@@ -499,7 +499,7 @@ function buildCodexBridge() {
     "- Use strideuiauditor as the read-only visual auditor for user-facing or layout-sensitive work before preview and handoff. It should inspect the live UI with Playwright when a route is available.",
     "- Spawn or use stridereviewer during patch, impl, and land before handoff.",
     "- If the work naturally splits, prefer multiple builders or reviewers over having the main chat touch files, but never use a second worker as a replacement for an active worker on the same slice.",
-    "- If a builder or reviewer result stalls, keep waiting for that worker unless there is a separate independent slice that can be assigned elsewhere; do not take over the edit or review in the main chat.",
+    "- If a builder or reviewer result stalls, keep waiting for that worker unless there is a separate independent slice that can be assigned elsewhere. If the worker ceiling is hit, wait for the active worker to finish or close an idle worker before continuing; do not take over the edit or review in the main chat.",
     "- Use .stride/runs/current.md for the latest manual-test handoff when it exists.",
     "- Use .stride/ledger.md for durable project facts.",
     "- Update the ledger when a discovery should survive future turns.",
