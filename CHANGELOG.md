@@ -61,6 +61,13 @@ Stride Workflow uses GitHub releases for every published update. Each release sh
 - Made `stride-workflow doctor` verify both the Playwright package and the Chromium browser binary.
 - Installed Playwright Chromium in the local package so the bundled visual-audit path is runnable.
 
+## [1.0.24] - 2026-06-30
+
+### Changed
+
+- Made `stride-workflow init` print a Playwright status line after install so users can see whether the visual-audit path is ready.
+- Kept the Playwright readiness check tied to the bundled dependency and Chromium binary.
+
 ## [1.0.17] - 2026-06-30
 
 ### Changed

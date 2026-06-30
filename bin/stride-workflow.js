@@ -168,6 +168,18 @@ function checkPlaywrightAvailability() {
   }
 }
 
+function printPlaywrightStatus() {
+  const problem = checkPlaywrightAvailability();
+  if (problem) {
+    console.log(`Playwright status: blocked (${problem})`);
+    return;
+  }
+
+  const playwright = requireFromHere("playwright");
+  const version = playwright?.version ?? packageJson.dependencies?.playwright ?? "available";
+  console.log(`Playwright status: ready (${version})`);
+}
+
 function collectDirChanges(srcDir, destDir, options, changes = []) {
   for (const entry of fs.readdirSync(srcDir, { withFileTypes: true })) {
     const srcPath = path.join(srcDir, entry.name);
@@ -635,6 +647,8 @@ async function initProject(args) {
 
   console.log("");
   console.log(`Stride Workflow initialized in ${projectDir}`);
+  console.log(`Stride UI auditor: ${checkPlaywrightAvailability() ? "blocked" : "ready"}`);
+  printPlaywrightStatus();
 }
 
 async function refreshProject(args) {
