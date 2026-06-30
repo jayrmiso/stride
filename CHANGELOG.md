@@ -10,6 +10,14 @@ Stride Workflow uses GitHub releases for every published update. Each release sh
 - install command
 - upgrade notes when behavior changes
 
+## [1.0.17] - 2026-06-30
+
+### Changed
+
+- Clarified that the orchestrator must not take over if a builder or reviewer stalls.
+- Allowed multiple builders or reviewers when a task naturally splits or the chosen mode justifies it.
+- Tightened the worker selection docs so default mode is still one builder and one reviewer, but balance and heavy can scale out.
+
 ## [1.0.16] - 2026-06-30
 
 ### Changed

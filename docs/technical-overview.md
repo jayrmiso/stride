@@ -125,7 +125,7 @@ AGENTS.md
 
 ## Token Posture
 
-Default Stride uses a small worker loop: the main chat orchestrates, `stridebuilder` edits, and `stridereviewer` checks the scoped diff. Broader recon, discovery, or debugging should escalate through `balance` or `heavy` only when the task justifies the token cost.
+Default Stride uses a small worker loop: the main chat orchestrates, `stridebuilder` edits, and `stridereviewer` checks the scoped diff. If a task naturally splits, balance or heavy mode may use multiple builder or reviewer workers, but the main chat still does not take over writes or reviews. Broader recon, discovery, or debugging should escalate through `balance` or `heavy` only when the task justifies the token cost.
 
 ## Diagram
 

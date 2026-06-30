@@ -34,9 +34,11 @@ Rules:
 - Stop and report a workflow error instead of editing from `main` or `master`.
 - Prepare exact builder instructions from the patch request: active worktree, branch, scope, files/areas, implementation steps, checks, and handoff expectations.
 - Spawn or use the `stridebuilder` worker to make the implementation changes inside the active worktree.
+- If the builder result is incomplete or stalls, do not take over the edit in the main chat. Either ask the builder for a blocking report or spawn a fresh builder worker for the same scope if the chosen mode justifies it.
 - If the builder worker is unavailable, stop and report that Stride cannot continue the default patch flow. Do not silently edit in the main chat.
 - Run the most relevant checks.
 - Spawn or use the `stridereviewer` worker to review the scoped diff for behavior, contracts, states, and missing tests.
+- If the reviewer result is incomplete or stalls, do not replace the review with a main-chat pass. Either ask the reviewer for a blocking report or spawn a fresh reviewer worker for the same scope if the chosen mode justifies it.
 - If the reviewer worker is unavailable, stop and report that Stride cannot complete the default patch flow.
 - Treat any `[blocking]` reviewer finding as mandatory: pass it back to `stridebuilder` once, re-run relevant checks, and re-review.
 - If the change is visual, start the preview from the edited checkout and write `.stride/runs/current.md`.

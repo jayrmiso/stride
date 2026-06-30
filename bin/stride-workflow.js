@@ -421,6 +421,7 @@ function buildCodexBridge() {
     "- Spawn or use stridebuilder for patch and impl implementation work.",
     "- Use stridelead as the read-only recon worker when extra repo facts are needed.",
     "- Spawn or use stridereviewer during patch, impl, and land before handoff.",
+    "- If a builder or reviewer result stalls, do not take over the edit or review in the main chat; either ask for a blocking report or spawn another worker when the chosen mode justifies it.",
     "- Use .stride/runs/current.md for the latest manual-test handoff when it exists.",
     "- Use .stride/ledger.md for durable project facts.",
     "- Update the ledger when a discovery should survive future turns.",
