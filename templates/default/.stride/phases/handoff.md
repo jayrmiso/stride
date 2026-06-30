@@ -14,6 +14,7 @@ When invoked
 Record the active worktree path, branch, worker mode, builder result, reviewer result, suggested commit subject, preview URL when available, what changed, what to check manually, commands/checks that passed, known risks or untested areas, and the next command.
 Make the manual-test section concrete: summarize the visible change, tell the user what screen or route to open, and list the specific things to inspect.
 If the worker flow could not produce a preview URL or visual verification, return Blocked instead of inventing a main-chat fallback.
+If the route is auth-gated, include the authenticated Playwright context or bootstrap note so the ui auditor can reuse it.
 
 Return:
 Status: Ready for manual test | Needs code fix | Blocked | Ready to land

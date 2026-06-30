@@ -37,6 +37,7 @@ When `init` runs against an existing Stride install, it shows a Stride changelog
 Use `refresh` when you want to remove the managed Stride files first and reinstall the current release cleanly.
 `stride-workflow doctor` checks that the installed Stride package still has its bundled Playwright dependency and Chromium browser binary for `strideuiauditor`.
 `stride-workflow init` prints a Playwright readiness line after install so users can confirm the visual-audit path immediately.
+If the target route is auth-gated, the previewer must preserve an authenticated Playwright context or the visual audit is blocked.
 
 ## Internal Phases
 

@@ -68,6 +68,14 @@ Stride Workflow uses GitHub releases for every published update. Each release sh
 - Made `stride-workflow init` print a Playwright status line after install so users can see whether the visual-audit path is ready.
 - Kept the Playwright readiness check tied to the bundled dependency and Chromium binary.
 
+## [1.0.25] - 2026-06-30
+
+### Changed
+
+- Clarified that auth-gated visual audits must use an authenticated Playwright context from the previewer or project docs.
+- Made the ui auditor return blocked instead of guessing when Playwright is unavailable or when no authenticated context exists for a protected route.
+- Propagated the auth-context requirement into previewer and handoff notes.
+
 ## [1.0.17] - 2026-06-30
 
 ### Changed
